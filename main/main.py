@@ -15,9 +15,11 @@ class MyFrame(wx.Frame):
         wx.Frame.__init__(self, parent, ID, title, pos, size, style)
         panel = wx.Panel(self, -1)
         
-        self.reg_hot_key()
+        self.hot_key_id = self.reg_hot_key()
         
         self.init_icon()
+        
+        self.CenterOnScreen()
         
         self.rgb_re = re.compile(r'\d{1,3},\d{1,3},\d{1,3}')
         self.rgb_re_num = re.compile(r'\d+')
@@ -49,24 +51,27 @@ class MyFrame(wx.Frame):
     def on_close(self, evt):
         self.Destroy()
         self.tbicon.Destroy()
-        hot_key.removeHotkey()
+        hot_key.removeHotkey(self.hot_key_id)
     
     def init_icon(self):
         my_icon = wx.EmptyIcon()
         my_icon.LoadFile('color_find.ico', wx.BITMAP_TYPE_ICO)
         self.SetIcon(my_icon)
-        self.tbicon=wx.TaskBarIcon()
+        self.tbicon = wx.TaskBarIcon()
         self.tbicon.SetIcon(my_icon, '颜色值转换器')
     
     def reg_hot_key(self):
-        hot_key.addHotkey(['Ctrl', 'Alt', 'C'], self.on_hot_key)
+        return hot_key.addHotkey(['Ctrl', 'Alt', 'C'], self.on_hot_key)
     
     def on_hot_key(self):
         if self.IsShown():
             self.Iconize()
-        if self.IsIconized():
+            self.Show(False)
+        elif self.IsIconized():
+            self.Iconize(False)
             self.Show(True)
             self.Raise()
+            self.t12.SetFocus()
         
     def find_num(self, s):
         result = self.rgb_re_num.findall(s)
@@ -127,7 +132,7 @@ class MyFrame(wx.Frame):
             
 if __name__ == '__main__':
     app = wx.App()
-    frame = MyFrame(None, -1, "test", size=(100, 150), style=wx.DEFAULT_FRAME_STYLE)
+    frame = MyFrame(None, -1, "test", size=(100, 150), style=wx.MAXIMIZE_BOX)
     frame.Show(True)
     app.MainLoop()
     
