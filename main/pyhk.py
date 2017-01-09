@@ -46,6 +46,7 @@
 
 import pythoncom, pyHook, ctypes, thread
 
+
 class pyhk:
     """Hotkey class extending pyhook"""
 
